@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Hospital Management System</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f7f9fc;
+      color: #333;
+    }
+
+    h2, h3, h4 {
+      text-align: center;
+      color: #0066cc;
+    }
+
+    form, .form-section {
+      max-width: 400px;
+      margin: 20px auto;
+      padding: 20px;
+      background: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 10px;
+    }
+
+    input, select, textarea, button {
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    #navbar {
+      display: flex;
+      justify-content: space-around;
+      background: #004080;
+      padding: 10px;
+    }
+
+    #navbar button {
+      flex: 1;
+      margin: 0 5px;
+      background: #0066cc;
+    }
+
+    #navbar button.active {
+      background: #003366;
+    }
+
+    .auth-toggle {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .auth-toggle a {
+      color: #0066cc;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    @media (max-width: 600px) {
+      form {
+        margin: 10px;
+        padding: 15px;
+      }
+
+      #navbar {
+        flex-direction: column;
+      }
+
+      #navbar button {
+        margin: 5px 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Authentication Section -->
+  <div id="auth-section">
+    <div id="login-form">
+      <h2>Healthcare Staff Login</h2>
+      <input type="email" id="email" placeholder="Email" required /><br />
+      <input type="password" id="password" placeholder="Password" required /><br />
+      <button onclick="login()" id="loginBtn">Login</button>
+      <div class="auth-toggle">
+        Don't have an account? <a onclick="showSignup()">Sign up</a>
+      </div>
+      <p id="login-error" style="color:red;"></p>
+    </div>
+
+    <div id="signup-form" style="display:none;">
+      <h2>Create Account</h2>
+      <input type="text" id="signup-name" placeholder="Full Name" required /><br />
+      <input type="email" id="signup-email" placeholder="Email" required /><br />
+      <input type="password" id="signup-password" placeholder="Password" required /><br />
+      <input type="password" id="signup-confirm-password" placeholder="Confirm Password" required /><br />
+      <button onclick="signup()" id="signupBtn">Sign Up</button>
+      <div class="auth-toggle">
+        Already have an account? <a onclick="showLogin()">Login</a>
+      </div>
+      <p id="signup-error" style="color:red;"></p>
+    </div>
+  </div>
+
+  <div id="dashboard" style="display:none;">
+    <h3>Welcome to Dashboard</h3>
+    <button onclick="logout()" id="logoutBtn">Logout</button>
+  </div>
+
+  <!-- Navigation bar for Switching sections -->
+  <div id="navbar" style="display:none;">
+    <button onclick="navigateTo('patient-registration')">Register</button>
+    <button onclick="navigateTo('appointment-section')">Appointments</button>
+    <button onclick="navigateTo('medical-records-section')">Records</button>
+    <button onclick="navigateTo('billing-section')">Billing</button>
+    <button onclick="navigateTo('patient-portal-section')">Patient Portal</button>
+  </div>
+
+  <!-- PATIENT REGISTRATION FORM -->
+  <div id="patient-registration" style="display:none;">
+    <h3>Patient Registration</h3>
+    <form id="registerForm">
+      <input type="text" id="patientName" placeholder="Full Name" required><br />
+      <input type="number" id="patientAge" placeholder="Age" required min="0" max="120"><br />
+      <select id="patientGender" required>
+        <option value="">Select Gender</option>
+        <option>Male</option>
+        <option>Female</option>
+        <option>Other</option>
+      </select><br />
+      <input type="tel" id="patientContact" placeholder="Contact Number" required pattern="[0-9]{10,15}"><br />
+      <input type="text" id="patientAddress" placeholder="Address" required><br />
+      <textarea id="patientHistory" placeholder="Medical History"></textarea><br />
+      <button type="submit">Register Patient</button>
+    </form>
+    <p id="registerMessage" style="color:green;"></p>
+  </div>
+
+  <!-- APPOINTMENT SCHEDULING -->
+  <div id="appointment-section" style="display:none;">
+    <h3>Schedule Appointment</h3>
+    <form id="appointmentForm">
+      <input type="text" id="apptPatientName" placeholder="Patient Name" required><br />
+      <select id="apptDoctor" required>
+        <option value="">Select Doctor</option>
+        <option>Dr. Smith</option>
+        <option>Dr. Patel</option>
+        <option>Dr. Khan</option>
+      </select><br />
+      <input type="date" id="apptDate" required><br />
+      <input type="time" id="apptTime" required><br />
+      <button type="submit">Book Appointment</button>
+    </form>
+    <p id="appointmentMessage" style="color:green;"></p>
+  </div>
+
+  <!-- MEDICAL RECORDS MANAGEMENT -->
+  <div id="medical-records-section" style="display:none;">
+    <h3>Medical Records Management</h3>
+    <input type="text" id="searchPatientName" placeholder="Enter patient name" required />
+    <button id="searchBtn">Search</button>
+    <div id="recordDetails" style="display:none; margin-top: 20px;">
+      <h4>Patient: <span id="recordPatientName"></span></h4>
+      <textarea id="existingRecords" readonly rows="8" cols="50"></textarea><br /><br />
+      <h5>Add New Entry</h5>
+      <textarea id="newRecordEntry" placeholder="Add diagnosis, prescriptions, notes..." rows="5" cols="50" required></textarea><br />
+      <button id="updateRecordBtn">Update Record</button>
+      <p id="recordMessage" style="color:green;"></p>
+    </div>
+  </div>
+
+  <!-- BILLING & INVOICING -->
+  <div id="billing-section" style="display:none;">
+    <h3>Billing & Invoicing</h3>
+    <form id="billingForm">
+      <input type="text" id="billPatientName" placeholder="Patient Name" required><br /><br />
+      <label>Service 1:</label>
+      <input type="text" class="service" placeholder="Service Description" />
+      <input type="number" class="fee" placeholder="Fee" min="0" step="0.01" /><br />
+      <label>Service 2:</label>
+      <input type="text" class="service" placeholder="Service Description" />
+      <input type="number" class="fee" placeholder="Fee" min="0" step="0.01" /><br />
+      <label>Service 3:</label>
+      <input type="text" class="service" placeholder="Service Description" />
+      <input type="number" class="fee" placeholder="Fee" min="0" step="0.01" /><br /><br />
+      <button type="submit">Generate Invoice</button>
+    </form>
+    <p id="billingMessage" style="color:green;"></p>
+  </div>
+
+  <!-- PATIENT PORTAL -->
+  <div id="patient-portal-section" style="display:none;">
+    <h3>Welcome to Your Patient Portal</h3>
+    <p><strong>Name:</strong> <span id="portalPatientName"></span></p>
+    <div>
+      <h4>Your Medical Records</h4>
+      <textarea id="portalMedicalRecords" readonly rows="10" cols="60"></textarea>
+    </div><br />
+    <div>
+      <h4>Your Appointments</h4>
+      <ul id="portalAppointmentsList"></ul>
+    </div><br />
+    <div>
+      <h4>Contact Doctor</h4>
+      <textarea id="patientMessage" rows="3" cols="50" placeholder="Write your message here..." required></textarea><br />
+      <button id="sendMessageBtn">Send Message</button>
+      <p id="messageStatus" style="color: green;"></p>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+  <script src="index.js"></script>
+</body>
+</html>
